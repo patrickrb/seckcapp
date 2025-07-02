@@ -11,7 +11,8 @@
       "Bash(rg:*)",
       "Bash(ls:*)",
       "Bash(cat:*)",
-      "WebFetch(domain:www.seckc.org)"
+      "WebFetch(domain:www.seckc.org)",
+      "Bash(npx cap:*)"
     ],
     "deny": []
   }
