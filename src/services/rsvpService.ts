@@ -11,7 +11,8 @@ import {
   updateDoc,
   writeBatch,
   serverTimestamp,
-  Timestamp
+  Timestamp,
+  FieldValue
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
@@ -29,7 +30,7 @@ const getAnonymousUserId = (): string => {
 interface RSVP {
   eventId: string;
   userId: string;
-  timestamp: Timestamp;
+  timestamp: Timestamp | FieldValue;
 }
 
 // RSVP Service

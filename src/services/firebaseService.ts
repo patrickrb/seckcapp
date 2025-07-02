@@ -261,7 +261,7 @@ export const resourcesService = {
     for (const resourceId of resourceIds) {
       const resource = await this.getResource(resourceId);
       if (resource) {
-        resources.push({ ...resource, isBookmarked: true });
+        resources.push(resource);
       }
     }
     
