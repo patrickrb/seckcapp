@@ -30,7 +30,8 @@ import {
   people,
   checkmark,
   notifications,
-  linkOutline
+  linkOutline,
+  navigate
 } from 'ionicons/icons';
 import { eventsService } from '../services/firebaseService';
 import { Event } from '../services/types';
@@ -88,6 +89,12 @@ const Home: React.FC = () => {
 
   const openEventWebsite = (url: string) => {
     window.open(url, '_blank');
+  };
+
+  const openInMaps = (address: string, locationName?: string) => {
+    const query = encodeURIComponent(address);
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
+    window.open(mapsUrl, '_blank');
   };
 
   const formatEventDate = (dateString: string) => {
@@ -230,13 +237,31 @@ const Home: React.FC = () => {
                     
                     <IonRow>
                       <IonCol size="12">
-                        <IonItem lines="none" className="event-detail-item">
-                          <IonIcon icon={location} slot="start" color="primary" />
-                          <IonLabel>
-                            <h3>{nextEvent.isVirtual ? 'Virtual Event' : nextEvent.location || 'Location TBD'}</h3>
-                            {nextEvent.address && <p>{nextEvent.address}</p>}
-                          </IonLabel>
-                        </IonItem>
+                        {nextEvent.isVirtual ? (
+                          <IonItem lines="none" className="event-detail-item">
+                            <IonIcon icon={location} slot="start" color="primary" />
+                            <IonLabel>
+                              <h3>Virtual Event</h3>
+                              {nextEvent.virtualLink && <p>Join link will be provided</p>}
+                            </IonLabel>
+                          </IonItem>
+                        ) : (
+                          <IonItem 
+                            lines="none" 
+                            className="event-detail-item"
+                            button={!!nextEvent.address}
+                            onClick={() => nextEvent.address && openInMaps(nextEvent.address, nextEvent.location)}
+                          >
+                            <IonIcon icon={location} slot="start" color="primary" />
+                            <IonLabel>
+                              <h3>{nextEvent.location || 'Location TBD'}</h3>
+                              {nextEvent.address && <p>{nextEvent.address}</p>}
+                            </IonLabel>
+                            {nextEvent.address && (
+                              <IonIcon icon={navigate} slot="end" color="medium" />
+                            )}
+                          </IonItem>
+                        )}
                       </IonCol>
                     </IonRow>
 
