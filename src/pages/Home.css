@@ -1,0 +1,155 @@
+.home-container {
+  padding: 16px;
+  max-width: 100%;
+}
+
+.welcome-card {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.event-preview-card {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+  margin: 12px 0;
+}
+
+.event-details {
+  margin: 16px 0;
+}
+
+.event-detail-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin: 8px 0;
+}
+
+.event-detail-item ion-icon {
+  margin-right: 12px;
+}
+
+.speaker-avatar {
+  background: var(--ion-color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.event-description {
+  margin: 16px 0;
+  padding: 12px;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+}
+
+.event-description p {
+  margin: 0;
+  color: var(--ion-color-medium-shade);
+}
+
+.event-topics {
+  margin: 16px 0;
+}
+
+.event-topics h4 {
+  margin: 0 0 8px 0;
+  color: var(--ion-color-dark);
+}
+
+.topics-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rsvp-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.rsvp-button {
+  margin: 16px 0;
+  --border-radius: 8px;
+}
+
+.rsvp-note {
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+  margin: 8px 0 0 0;
+}
+
+.stats-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stats-row {
+  text-align: center;
+}
+
+.stat-col {
+  padding: 16px 8px;
+}
+
+.stat h2 {
+  margin: 0 0 4px 0;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--ion-color-primary);
+}
+
+.stat p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ion-color-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .home-container {
+    padding: 12px;
+  }
+  
+  .event-title {
+    font-size: 1.2rem;
+  }
+  
+  .topics-chips {
+    justify-content: center;
+  }
+  
+  .stat h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Touch feedback */
+.rsvp-button:active {
+  transform: scale(0.98);
+}
+
+ion-chip:active {
+  transform: scale(0.95);
+}

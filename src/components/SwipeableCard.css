@@ -1,0 +1,126 @@
+.swipeable-card-container {
+  position: relative;
+  margin: 12px 0;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.gesture-container {
+  position: relative;
+  width: 100%;
+}
+
+.swipeable-card {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  background: var(--ion-color-base);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  will-change: transform;
+}
+
+.swipe-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 200px;
+  background: var(--ion-color-light-shade);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 16px;
+  z-index: 1;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-out;
+}
+
+.swipe-actions.revealed {
+  transform: translateX(0);
+}
+
+.action-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin: 0 4px;
+  transition: all 0.2s ease;
+}
+
+.action-button:active {
+  transform: scale(0.9);
+}
+
+.bookmark-button {
+  --background: rgba(var(--ion-color-warning-rgb), 0.1);
+}
+
+.bookmark-button:hover {
+  --background: rgba(var(--ion-color-warning-rgb), 0.2);
+}
+
+.share-button {
+  --background: rgba(var(--ion-color-primary-rgb), 0.1);
+}
+
+.share-button:hover {
+  --background: rgba(var(--ion-color-primary-rgb), 0.2);
+}
+
+.delete-button {
+  --background: rgba(var(--ion-color-danger-rgb), 0.1);
+}
+
+.delete-button:hover {
+  --background: rgba(var(--ion-color-danger-rgb), 0.2);
+}
+
+/* Touch feedback */
+.swipeable-card:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .swipeable-card,
+  .swipe-actions {
+    transition: none;
+  }
+  
+  .action-button {
+    transition: none;
+  }
+  
+  .swipeable-card:active,
+  .action-button:active {
+    transform: none;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .swipe-actions {
+    width: 160px;
+    padding: 0 12px;
+  }
+  
+  .action-button {
+    width: 40px;
+    height: 40px;
+    margin: 0 2px;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .swipe-actions {
+    background: var(--ion-color-medium);
+    border-left: 2px solid var(--ion-color-dark);
+  }
+  
+  .action-button {
+    border: 1px solid currentColor;
+  }
+}
