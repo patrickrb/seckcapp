@@ -38,7 +38,6 @@ export const createSampleEventsWithMultipleSpeakers = async () => {
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
       rsvpCount: 47,
-      isBookmarked: false
     },
     {
       title: "Incident Response Workshop",
@@ -75,7 +74,6 @@ export const createSampleEventsWithMultipleSpeakers = async () => {
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
       rsvpCount: 35,
-      isBookmarked: false
     },
     {
       title: "Cloud Security Fundamentals",
@@ -111,7 +109,6 @@ export const createSampleEventsWithMultipleSpeakers = async () => {
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
       rsvpCount: 89,
-      isBookmarked: false
     }
   ];
 

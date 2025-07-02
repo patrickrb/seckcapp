@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
@@ -20,6 +21,7 @@ import Home from './pages/Home';
 import Events from './pages/Events';
 import Social from './pages/Social';
 import Settings from './pages/Settings';
+import SplashScreen from './components/SplashScreen';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -57,50 +59,66 @@ setupIonicReact();
 initializeTheme();
 watchSystemTheme();
 
-const App: React.FC = () => (
-  <IonApp>
-    <AuthProvider>
-      <IonReactRouter>
-        <IonTabs>
-          <IonRouterOutlet>
-            <Route exact path="/home">
-              <Home />
-            </Route>
-            <Route exact path="/events">
-              <Events />
-            </Route>
-            <Route exact path="/social">
-              <Social />
-            </Route>
-            <Route exact path="/settings">
-              <Settings />
-            </Route>
-            <Route exact path="/">
-              <Redirect to="/home" />
-            </Route>
-          </IonRouterOutlet>
-          <IonTabBar slot="bottom">
-            <IonTabButton tab="home" href="/home">
-              <IonIcon aria-hidden="true" icon={home} />
-              <IonLabel>Home</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="events" href="/events">
-              <IonIcon aria-hidden="true" icon={calendar} />
-              <IonLabel>Events</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="social" href="/social">
-              <IonIcon aria-hidden="true" icon={people} />
-              <IonLabel>Social</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="settings" href="/settings">
-              <IonIcon aria-hidden="true" icon={settings} />
-              <IonLabel>Settings</IonLabel>
-            </IonTabButton>
-          </IonTabBar>
-        </IonTabs>
-      </IonReactRouter>
-    </AuthProvider>
-  </IonApp>
-);
+const App: React.FC = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    // Hide splash screen after 2.5 seconds
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <IonApp>
+      <AuthProvider>
+        <IonReactRouter>
+          <IonTabs>
+            <IonRouterOutlet>
+              <Route exact path="/home">
+                <Home />
+              </Route>
+              <Route exact path="/events">
+                <Events />
+              </Route>
+              <Route exact path="/social">
+                <Social />
+              </Route>
+              <Route exact path="/settings">
+                <Settings />
+              </Route>
+              <Route exact path="/">
+                <Redirect to="/home" />
+              </Route>
+            </IonRouterOutlet>
+            <IonTabBar slot="bottom">
+              <IonTabButton tab="home" href="/home">
+                <IonIcon aria-hidden="true" icon={home} />
+                <IonLabel>Home</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="events" href="/events">
+                <IonIcon aria-hidden="true" icon={calendar} />
+                <IonLabel>Events</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="social" href="/social">
+                <IonIcon aria-hidden="true" icon={people} />
+                <IonLabel>Social</IonLabel>
+              </IonTabButton>
+              <IonTabButton tab="settings" href="/settings">
+                <IonIcon aria-hidden="true" icon={settings} />
+                <IonLabel>Settings</IonLabel>
+              </IonTabButton>
+            </IonTabBar>
+          </IonTabs>
+        </IonReactRouter>
+      </AuthProvider>
+      
+      {/* Splash Screen */}
+      <SplashScreen isVisible={showSplash} />
+    </IonApp>
+  );
+};
 
 export default App;

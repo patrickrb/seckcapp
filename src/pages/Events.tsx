@@ -25,18 +25,19 @@ import {
   IonSearchbar,
   IonRefresher,
   IonRefresherContent,
-  IonSpinner
+  IonSpinner,
+  IonModal,
+  IonButtons
 } from '@ionic/react';
 import ReactMarkdown from 'react-markdown';
 import {
   calendar,
   location,
   people,
-  bookmark,
-  bookmarkOutline,
   chevronForward,
   navigate,
-  linkOutline
+  linkOutline,
+  close
 } from 'ionicons/icons';
 import { eventsService } from '../services/firebaseService';
 import { rsvpService } from '../services/rsvpService';
@@ -56,6 +57,8 @@ const Events: React.FC = () => {
   const [userRsvps, setUserRsvps] = useState<{ [eventId: string]: boolean }>({});
   const [eventRsvpCounts, setEventRsvpCounts] = useState<{ [eventId: string]: number }>({});
   const [rsvpLoading, setRsvpLoading] = useState<string | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [showSpeakerModal, setShowSpeakerModal] = useState(false);
 
   useEffect(() => {
     loadEvents();
@@ -83,29 +86,6 @@ const Events: React.FC = () => {
     }
   };
 
-  const toggleBookmark = async (eventId: string) => {
-    if (!user) return;
-    
-    try {
-      // Update local state immediately for better UX
-      setEvents(events.map(event => 
-        event.id === eventId 
-          ? { ...event, isBookmarked: !event.isBookmarked }
-          : event
-      ));
-      
-      // Here you would implement bookmark service
-      // For now, we'll just update the local state
-    } catch (err) {
-      console.error('Error toggling bookmark:', err);
-      // Revert on error
-      setEvents(events.map(event => 
-        event.id === eventId 
-          ? { ...event, isBookmarked: !event.isBookmarked }
-          : event
-      ));
-    }
-  };
 
   const loadRsvpData = async () => {
     if (events.length === 0) return;
@@ -143,6 +123,11 @@ const Events: React.FC = () => {
     }
   };
 
+  const handleSpeakerClick = (event: Event) => {
+    setSelectedEvent(event);
+    setShowSpeakerModal(true);
+  };
+
   const openInMaps = (address: string, locationName?: string) => {
     const query = encodeURIComponent(address);
     const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
@@ -167,9 +152,7 @@ const Events: React.FC = () => {
     const eventDate = new Date(event.eventDate);
     const isPast = eventDate < now;
     
-    const matchesSegment = selectedSegment === 'upcoming' ? !isPast : 
-                          selectedSegment === 'past' ? isPast :
-                          event.isBookmarked;
+    const matchesSegment = selectedSegment === 'upcoming' ? !isPast : isPast;
     
     const matchesSearch = event.title.toLowerCase().includes(searchText.toLowerCase()) ||
                          (event.speakerName && event.speakerName.toLowerCase().includes(searchText.toLowerCase())) ||
@@ -270,9 +253,6 @@ const Events: React.FC = () => {
             <IonSegmentButton value="upcoming">
               <IonLabel>Upcoming</IonLabel>
             </IonSegmentButton>
-            <IonSegmentButton value="bookmarked">
-              <IonLabel>Bookmarked</IonLabel>
-            </IonSegmentButton>
             <IonSegmentButton value="past">
               <IonLabel>Past</IonLabel>
             </IonSegmentButton>
@@ -310,16 +290,6 @@ const Events: React.FC = () => {
                         </IonChip>
                       ))}
                     </div>
-                    <IonButton
-                      fill="clear"
-                      size="small"
-                      onClick={() => toggleBookmark(event.id)}
-                    >
-                      <IonIcon
-                        icon={event.isBookmarked ? bookmark : bookmarkOutline}
-                        color={event.isBookmarked ? 'warning' : 'medium'}
-                      />
-                    </IonButton>
                   </div>
                   <IonCardTitle className="event-card-title">
                     {event.eventUrl ? (
@@ -328,7 +298,7 @@ const Events: React.FC = () => {
                           display: 'flex', 
                           alignItems: 'center', 
                           cursor: 'pointer',
-                          color: 'var(--ion-color-primary)'
+                          color: 'white'
                         }}
                         onClick={() => openEventWebsite(event.eventUrl!)}
                       >
@@ -391,7 +361,12 @@ const Events: React.FC = () => {
 
                     <IonRow>
                       <IonCol size="12">
-                        <IonItem lines="none" className="event-info-item">
+                        <IonItem 
+                          lines="none" 
+                          className="event-info-item"
+                          button={!!(event.speakerNames && event.speakerNames.length > 1) || !!event.speakerName}
+                          onClick={() => handleSpeakerClick(event)}
+                        >
                           <IonAvatar slot="start" className="speaker-avatar-small">
                             {event.speakerImageUrl ? (
                               <img src={event.speakerImageUrl} alt={event.speakerNames?.[0] || event.speakerName} />
@@ -522,6 +497,87 @@ const Events: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Speaker Details Modal */}
+        <IonModal isOpen={showSpeakerModal} onDidDismiss={() => setShowSpeakerModal(false)}>
+          <IonHeader>
+            <IonToolbar color="primary">
+              <IonTitle>Speaker Details</IonTitle>
+              <IonButtons slot="end">
+                <IonButton onClick={() => setShowSpeakerModal(false)}>
+                  <IonIcon icon={close} />
+                </IonButton>
+              </IonButtons>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent>
+            {selectedEvent && (
+              <div style={{ padding: '16px' }}>
+                <IonCard>
+                  <IonCardHeader>
+                    <IonCardTitle style={{ color: 'var(--ion-color-primary)', fontSize: '1.2rem' }}>
+                      {selectedEvent.title}
+                    </IonCardTitle>
+                  </IonCardHeader>
+                  <IonCardContent>
+                    <div style={{ marginBottom: '20px' }}>
+                      <h3 style={{ margin: '0 0 16px 0', color: 'var(--ion-color-dark)' }}>
+                        {(selectedEvent.speakerNames && selectedEvent.speakerNames.length > 1) 
+                          ? 'Speakers:' 
+                          : 'Speaker:'}
+                      </h3>
+                      
+                      {selectedEvent.speakerNames && selectedEvent.speakerNames.length > 0 ? (
+                        <IonList>
+                          {selectedEvent.speakerNames.map((speaker, index) => (
+                            <IonItem key={index} lines={index < selectedEvent.speakerNames!.length - 1 ? 'inset' : 'none'}>
+                              <IonAvatar slot="start">
+                                <div className="speaker-initial">
+                                  {speaker.charAt(0)}
+                                </div>
+                              </IonAvatar>
+                              <IonLabel>
+                                <h2>{speaker}</h2>
+                                {selectedEvent.speakerTitle && (
+                                  <p>{selectedEvent.speakerTitle}</p>
+                                )}
+                              </IonLabel>
+                            </IonItem>
+                          ))}
+                        </IonList>
+                      ) : selectedEvent.speakerName ? (
+                        <IonItem lines="none">
+                          <IonAvatar slot="start">
+                            <div className="speaker-initial">
+                              {selectedEvent.speakerName.charAt(0)}
+                            </div>
+                          </IonAvatar>
+                          <IonLabel>
+                            <h2>{selectedEvent.speakerName}</h2>
+                            {selectedEvent.speakerTitle && (
+                              <p>{selectedEvent.speakerTitle}</p>
+                            )}
+                          </IonLabel>
+                        </IonItem>
+                      ) : (
+                        <p>Speaker information not available</p>
+                      )}
+                    </div>
+
+                    {selectedEvent.speakerBio && (
+                      <div style={{ marginTop: '20px' }}>
+                        <h4 style={{ margin: '0 0 8px 0', color: 'var(--ion-color-dark)' }}>Bio:</h4>
+                        <p style={{ color: 'var(--ion-color-medium-shade)', lineHeight: '1.4' }}>
+                          {selectedEvent.speakerBio}
+                        </p>
+                      </div>
+                    )}
+                  </IonCardContent>
+                </IonCard>
+              </div>
+            )}
+          </IonContent>
+        </IonModal>
       </IonContent>
     </IonPage>
   );

@@ -28,13 +28,8 @@ import {
   logoLinkedin,
   globe,
   mail,
-  chatbubbles,
   people,
   newspaper,
-  calendar,
-  share,
-  heart,
-  star,
   chevronForward,
   openOutline
 } from 'ionicons/icons';
@@ -52,12 +47,6 @@ interface SocialLink {
   type: 'primary' | 'secondary';
 }
 
-interface CommunityStats {
-  totalMembers: number;
-  activeDiscussions: number;
-  monthlyEvents: number;
-  resourcesShared: number;
-}
 
 const Social: React.FC = () => {
   const socialLinks: SocialLink[] = [
@@ -88,7 +77,7 @@ const Social: React.FC = () => {
       name: "LinkedIn Group",
       description: "Professional networking and career opportunities in cybersecurity",
       icon: logoLinkedin,
-      url: "https://linkedin.com/company/seckc",
+      url: "https://www.linkedin.com/company/seckc-inc/",
       color: "linkedin",
       members: 800,
       isActive: true,
@@ -116,55 +105,12 @@ const Social: React.FC = () => {
     }
   ];
 
-  const communityStats: CommunityStats = {
-    totalMembers: 2450,
-    activeDiscussions: 15,
-    monthlyEvents: 4,
-    resourcesShared: 127
-  };
 
-  const recentPosts = [
-    {
-      id: 1,
-      platform: "Discord",
-      author: "SecurityPro_KC",
-      content: "Great discussion on zero-trust architecture in today's #general channel. Thanks everyone for sharing insights!",
-      time: "2 hours ago",
-      likes: 12,
-      replies: 5
-    },
-    {
-      id: 2,
-      platform: "Twitter",
-      author: "@SECKC_Official",
-      content: "Reminder: Advanced Web Security workshop tomorrow at 6:30 PM. Still a few spots available! #cybersecurity #kansascity",
-      time: "4 hours ago",
-      likes: 28,
-      replies: 8
-    },
-    {
-      id: 3,
-      platform: "LinkedIn",
-      author: "Mike Rodriguez",
-      content: "Just shared my incident response experience from last week's SECKC presentation. Link in comments.",
-      time: "1 day ago",
-      likes: 45,
-      replies: 12
-    }
-  ];
 
   const openLink = (url: string) => {
     window.open(url, '_blank');
   };
 
-  const getPlatformIcon = (platform: string) => {
-    switch (platform.toLowerCase()) {
-      case 'discord': return logoDiscord;
-      case 'twitter': return logoTwitter;
-      case 'linkedin': return logoLinkedin;
-      default: return chatbubbles;
-    }
-  };
 
   return (
     <IonPage>
@@ -207,48 +153,6 @@ const Social: React.FC = () => {
         </IonHeader>
 
         <div className="social-container">
-          {/* Community Stats */}
-          <IonCard className="stats-overview-card">
-            <IonCardHeader>
-              <IonCardTitle>Community Overview</IonCardTitle>
-            </IonCardHeader>
-            <IonCardContent>
-              <IonGrid>
-                <IonRow>
-                  <IonCol size="6">
-                    <div className="stat-item">
-                      <IonIcon icon={people} color="primary" size="large" />
-                      <h3>{communityStats.totalMembers.toLocaleString()}</h3>
-                      <p>Total Members</p>
-                    </div>
-                  </IonCol>
-                  <IonCol size="6">
-                    <div className="stat-item">
-                      <IonIcon icon={chatbubbles} color="success" size="large" />
-                      <h3>{communityStats.activeDiscussions}</h3>
-                      <p>Active Discussions</p>
-                    </div>
-                  </IonCol>
-                </IonRow>
-                <IonRow>
-                  <IonCol size="6">
-                    <div className="stat-item">
-                      <IonIcon icon={calendar} color="warning" size="large" />
-                      <h3>{communityStats.monthlyEvents}</h3>
-                      <p>Monthly Events</p>
-                    </div>
-                  </IonCol>
-                  <IonCol size="6">
-                    <div className="stat-item">
-                      <IonIcon icon={share} color="tertiary" size="large" />
-                      <h3>{communityStats.resourcesShared}</h3>
-                      <p>Resources Shared</p>
-                    </div>
-                  </IonCol>
-                </IonRow>
-              </IonGrid>
-            </IonCardContent>
-          </IonCard>
 
           {/* Primary Social Links */}
           <IonCard className="primary-links-card">
@@ -316,71 +220,28 @@ const Social: React.FC = () => {
             </IonCardContent>
           </IonCard>
 
-          {/* Recent Community Activity */}
-          <IonCard className="activity-card">
-            <IonCardHeader>
-              <div className="activity-header">
-                <IonCardTitle>Recent Activity</IonCardTitle>
-                <IonChip color="primary" outline>
-                  <IonIcon icon={star} size="small" />
-                  Live
-                </IonChip>
-              </div>
-            </IonCardHeader>
-            <IonCardContent>
-              <div className="activity-list">
-                {recentPosts.map((post) => (
-                  <div key={post.id} className="activity-item">
-                    <div className="activity-header-item">
-                      <IonAvatar className="platform-avatar">
-                        <IonIcon icon={getPlatformIcon(post.platform)} />
-                      </IonAvatar>
-                      <div className="activity-meta">
-                        <h4>{post.author}</h4>
-                        <div className="activity-platform">
-                          <span>{post.platform}</span>
-                          <span className="activity-time">{post.time}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="activity-content">{post.content}</p>
-                    <div className="activity-stats">
-                      <div className="stat">
-                        <IonIcon icon={heart} size="small" color="danger" />
-                        <span>{post.likes}</span>
-                      </div>
-                      <div className="stat">
-                        <IonIcon icon={chatbubbles} size="small" color="medium" />
-                        <span>{post.replies}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </IonCardContent>
-          </IonCard>
 
-          {/* Community Guidelines */}
+          {/* Code of Conduct */}
           <IonCard className="guidelines-card">
             <IonCardHeader>
-              <IonCardTitle>Community Guidelines</IonCardTitle>
+              <IonCardTitle>Code of Conduct</IonCardTitle>
             </IonCardHeader>
             <IonCardContent>
               <div className="guidelines-content">
-                <p><strong>🤝 Be Respectful:</strong> Treat all members with courtesy and professionalism</p>
-                <p><strong>🔒 Share Responsibly:</strong> No sensitive information or exploit details</p>
-                <p><strong>💡 Stay On-Topic:</strong> Keep discussions focused on cybersecurity</p>
-                <p><strong>🚫 No Spam:</strong> Quality over quantity in posts and comments</p>
-                <p><strong>🎯 Help Others:</strong> Share knowledge and support fellow members</p>
+                <p><strong>🎯 Core Principle:</strong> "Challenge ideas, not people"</p>
+                <p><strong>🤝 Respect Diversity:</strong> Welcome and encourage diverse viewpoints</p>
+                <p><strong>🚫 No Harassment:</strong> Zero tolerance for intimidation or making others feel unwelcome</p>
+                <p><strong>⚡ Immediate Compliance:</strong> Stop inappropriate behavior when asked</p>
+                <p><strong>📢 Report Issues:</strong> Contact volunteers or email codeofconduct@seckc.org</p>
               </div>
               <IonButton 
                 expand="block" 
                 fill="outline" 
                 size="small"
-                onClick={() => openLink('https://seckc.org/guidelines')}
+                onClick={() => openLink('https://www.seckc.org/code-of-conduct')}
                 className="guidelines-button"
               >
-                View Full Guidelines
+                View Full Code of Conduct
                 <IonIcon icon={openOutline} slot="end" />
               </IonButton>
             </IonCardContent>

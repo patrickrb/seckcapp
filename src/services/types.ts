@@ -71,7 +71,6 @@ export interface Event {
   rsvpCount: number;
   userRsvpStatus?: 'attending' | 'maybe' | 'not_attending';
   userAttended?: boolean;
-  isBookmarked?: boolean;
 }
 
 export interface EventCategory {
@@ -107,7 +106,6 @@ export interface Resource {
   createdAt: string;
   updatedAt: string;
   category?: ResourceCategory;
-  isBookmarked?: boolean;
   userRating?: { rating: number; review?: string };
 }
 

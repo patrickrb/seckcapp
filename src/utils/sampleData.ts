@@ -32,7 +32,6 @@ export const createSampleEvents = async () => {
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
       rsvpCount: 47,
-      isBookmarked: false
     },
     {
       title: "Incident Response Workshop",
@@ -63,7 +62,6 @@ export const createSampleEvents = async () => {
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
       rsvpCount: 35,
-      isBookmarked: false
     },
     {
       title: "Cloud Security Fundamentals",
@@ -94,7 +92,6 @@ export const createSampleEvents = async () => {
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
       rsvpCount: 89,
-      isBookmarked: false
     },
     {
       title: "Social Engineering Defense",
@@ -125,7 +122,6 @@ export const createSampleEvents = async () => {
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
       rsvpCount: 52,
-      isBookmarked: false
     }
   ];
 
