@@ -22,6 +22,7 @@ import {
   IonSpinner,
   IonSkeletonText
 } from '@ionic/react';
+import ReactMarkdown from 'react-markdown';
 import { 
   shield, 
   calendar, 
@@ -303,7 +304,7 @@ const Home: React.FC = () => {
                   </IonGrid>
 
                   <div className="event-description">
-                    <p>{nextEvent.description}</p>
+                    <ReactMarkdown>{nextEvent.description}</ReactMarkdown>
                   </div>
 
                   {(Array.isArray(nextEvent.topics) && nextEvent.topics.length > 0) && (

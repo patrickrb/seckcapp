@@ -27,6 +27,7 @@ import {
   IonRefresherContent,
   IonSpinner
 } from '@ionic/react';
+import ReactMarkdown from 'react-markdown';
 import {
   calendar,
   location,
@@ -392,7 +393,9 @@ const Events: React.FC = () => {
                     </IonRow>
                   </IonGrid>
 
-                  <p className="event-description">{event.description}</p>
+                  <div className="event-description">
+                    <ReactMarkdown>{event.description}</ReactMarkdown>
+                  </div>
 
                   {/* Sponsors Section */}
                   {(event.sponsorLinks && Object.keys(event.sponsorLinks).length > 0) && (
