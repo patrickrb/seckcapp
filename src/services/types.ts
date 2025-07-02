@@ -68,7 +68,7 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
   category?: EventCategory;
-  attendeeCount: number;
+  rsvpCount: number;
   userRsvpStatus?: 'attending' | 'maybe' | 'not_attending';
   userAttended?: boolean;
   isBookmarked?: boolean;

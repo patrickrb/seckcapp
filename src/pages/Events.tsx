@@ -39,6 +39,7 @@ import {
   linkOutline
 } from 'ionicons/icons';
 import { eventsService } from '../services/firebaseService';
+import { rsvpService } from '../services/rsvpService';
 import { Event } from '../services/types';
 import { useAuth } from '../contexts/AuthContext';
 import './Events.css';
@@ -52,10 +53,19 @@ const Events: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [userRsvps, setUserRsvps] = useState<{ [eventId: string]: boolean }>({});
+  const [eventRsvpCounts, setEventRsvpCounts] = useState<{ [eventId: string]: number }>({});
+  const [rsvpLoading, setRsvpLoading] = useState<string | null>(null);
 
   useEffect(() => {
     loadEvents();
   }, []);
+
+  useEffect(() => {
+    if (events.length > 0) {
+      loadRsvpData();
+    }
+  }, [events]);
 
   const loadEvents = async () => {
     try {
@@ -97,19 +107,39 @@ const Events: React.FC = () => {
     }
   };
 
-  const handleRSVP = async (eventId: string) => {
-    if (!user) return;
+  const loadRsvpData = async () => {
+    if (events.length === 0) return;
     
     try {
-      await eventsService.rsvpToEvent(eventId, user.uid, 'attending');
-      // Update local state to reflect RSVP
-      setEvents(events.map(event => 
-        event.id === eventId 
-          ? { ...event, userRsvpStatus: 'attending' }
-          : event
-      ));
-    } catch (err) {
-      console.error('Error RSVPing to event:', err);
+      const eventIds = events.map(event => event.id);
+      
+      // Load user's RSVPs and event counts
+      const [userRsvpData, eventCounts] = await Promise.all([
+        rsvpService.getUserRsvps(),
+        rsvpService.getEventRsvpCounts(eventIds)
+      ]);
+      
+      setUserRsvps(userRsvpData);
+      setEventRsvpCounts(eventCounts);
+    } catch (error) {
+      console.error('Error loading RSVP data:', error);
+    }
+  };
+
+  const handleRSVP = async (eventId: string) => {
+    if (rsvpLoading) return;
+    
+    try {
+      setRsvpLoading(eventId);
+      const result = await rsvpService.toggleRsvp(eventId);
+      
+      // Update local state
+      setUserRsvps({ ...userRsvps, [eventId]: result.isRsvped });
+      setEventRsvpCounts({ ...eventRsvpCounts, [eventId]: result.newCount });
+    } catch (error) {
+      console.error('Error handling RSVP:', error);
+    } finally {
+      setRsvpLoading(null);
     }
   };
 
@@ -386,7 +416,7 @@ const Events: React.FC = () => {
                           </IonLabel>
                           <IonBadge color="medium" slot="end">
                             <IonIcon icon={people} size="small" />
-                            {event.attendeeCount || 0}
+                            {eventRsvpCounts[event.id] || 0}
                           </IonBadge>
                         </IonItem>
                       </IonCol>
@@ -443,12 +473,16 @@ const Events: React.FC = () => {
                       <>
                         <IonButton 
                           expand="block" 
-                          color={event.userRsvpStatus === 'attending' ? 'medium' : 'success'}
+                          color={userRsvps[event.id] ? 'medium' : 'success'}
                           className="rsvp-btn"
                           onClick={() => handleRSVP(event.id)}
-                          disabled={!user}
+                          disabled={rsvpLoading === event.id}
                         >
-                          {event.userRsvpStatus === 'attending' ? 'RSVP\'d' : 'RSVP'}
+                          {rsvpLoading === event.id 
+                            ? 'Processing...' 
+                            : userRsvps[event.id] 
+                              ? 'RSVP\'d' 
+                              : 'RSVP'}
                         </IonButton>
                         <IonButton 
                           fill="outline" 

@@ -31,7 +31,7 @@ export const createSampleEvents = async () => {
       isFeatured: true,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
-      attendeeCount: 47,
+      rsvpCount: 47,
       isBookmarked: false
     },
     {
@@ -62,7 +62,7 @@ export const createSampleEvents = async () => {
       isFeatured: false,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
-      attendeeCount: 35,
+      rsvpCount: 35,
       isBookmarked: false
     },
     {
@@ -93,7 +93,7 @@ export const createSampleEvents = async () => {
       isFeatured: true,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
-      attendeeCount: 89,
+      rsvpCount: 89,
       isBookmarked: false
     },
     {
@@ -124,7 +124,7 @@ export const createSampleEvents = async () => {
       isFeatured: false,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
-      attendeeCount: 52,
+      rsvpCount: 52,
       isBookmarked: false
     }
   ];

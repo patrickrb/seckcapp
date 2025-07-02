@@ -35,6 +35,8 @@ import {
   navigate
 } from 'ionicons/icons';
 import { eventsService } from '../services/firebaseService';
+import { rsvpService } from '../services/rsvpService';
+import { statsService } from '../services/statsService';
 import { Event } from '../services/types';
 import { useAuth } from '../contexts/AuthContext';
 import './Home.css';
@@ -44,10 +46,22 @@ const Home: React.FC = () => {
   const [nextEvent, setNextEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [userRsvps, setUserRsvps] = useState<{ [eventId: string]: boolean }>({});
+  const [eventRsvpCounts, setEventRsvpCounts] = useState<{ [eventId: string]: number }>({});
+  const [rsvpLoading, setRsvpLoading] = useState<string | null>(null);
+  const [siteStats, setSiteStats] = useState({ totalEvents: 126, totalMembers: 500, yearsActive: 12 });
+  const [statsLoading, setStatsLoading] = useState(true);
 
   useEffect(() => {
     loadNextEvent();
+    loadSiteStats();
   }, []);
+
+  useEffect(() => {
+    if (nextEvent) {
+      loadRsvpData();
+    }
+  }, [nextEvent]);
 
   const loadNextEvent = async () => {
     try {
@@ -76,15 +90,54 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleRSVP = async () => {
-    if (!user || !nextEvent) return;
+  const loadRsvpData = async () => {
+    if (!nextEvent) return;
     
     try {
-      await eventsService.rsvpToEvent(nextEvent.id, user.uid, 'attending');
-      // Refresh event data to show updated RSVP status
-      await loadNextEvent();
-    } catch (err) {
-      console.error('Error RSVPing to event:', err);
+      // Load user's RSVP status and event count
+      const [userRsvpStatus, eventCount] = await Promise.all([
+        rsvpService.getUserRsvpStatus(nextEvent.id),
+        rsvpService.getEventRsvpCount(nextEvent.id)
+      ]);
+      
+      setUserRsvps({ [nextEvent.id]: userRsvpStatus });
+      setEventRsvpCounts({ [nextEvent.id]: eventCount });
+    } catch (error) {
+      console.error('Error loading RSVP data:', error);
+    }
+  };
+
+  const handleRSVP = async () => {
+    if (!nextEvent || rsvpLoading) return;
+    
+    try {
+      setRsvpLoading(nextEvent.id);
+      const result = await rsvpService.toggleRsvp(nextEvent.id);
+      
+      // Update local state
+      setUserRsvps({ ...userRsvps, [nextEvent.id]: result.isRsvped });
+      setEventRsvpCounts({ ...eventRsvpCounts, [nextEvent.id]: result.newCount });
+    } catch (error) {
+      console.error('Error handling RSVP:', error);
+    } finally {
+      setRsvpLoading(null);
+    }
+  };
+
+  const loadSiteStats = async () => {
+    try {
+      setStatsLoading(true);
+      const stats = await statsService.getSiteStats();
+      setSiteStats({
+        totalEvents: stats.totalEvents,
+        totalMembers: stats.totalMembers,
+        yearsActive: stats.yearsActive
+      });
+    } catch (error) {
+      console.error('Error loading site stats:', error);
+      // Keep default values if fetch fails
+    } finally {
+      setStatsLoading(false);
     }
   };
 
@@ -296,7 +349,7 @@ const Home: React.FC = () => {
                         <IonItem lines="none" className="event-detail-item">
                           <IonIcon icon={people} slot="start" color="primary" />
                           <IonLabel>
-                            <h3>{nextEvent.attendeeCount || 0} attending</h3>
+                            <h3>{eventRsvpCounts[nextEvent.id] || 0} attending</h3>
                           </IonLabel>
                         </IonItem>
                       </IonCol>
@@ -360,13 +413,17 @@ const Home: React.FC = () => {
                     <IonButton 
                       expand="block" 
                       size="large" 
-                      color={nextEvent.userRsvpStatus === 'attending' ? 'medium' : 'success'}
+                      color={userRsvps[nextEvent.id] ? 'medium' : 'success'}
                       onClick={handleRSVP}
                       className="rsvp-button"
-                      disabled={!user}
+                      disabled={rsvpLoading === nextEvent.id}
                     >
                       <IonIcon icon={checkmark} slot="start" />
-                      {nextEvent.userRsvpStatus === 'attending' ? 'RSVP\'d' : 'RSVP for This Event'}
+                      {rsvpLoading === nextEvent.id 
+                        ? 'Processing...' 
+                        : userRsvps[nextEvent.id] 
+                          ? 'RSVP\'d - Click to Cancel' 
+                          : 'RSVP for This Event'}
                     </IonButton>
                     <p className="rsvp-note">Free for all members • Light refreshments provided</p>
                   </div>
@@ -388,19 +445,31 @@ const Home: React.FC = () => {
                 <IonRow className="stats-row">
                   <IonCol size="4" className="stat-col">
                     <div className="stat">
-                      <h2>500+</h2>
+                      {statsLoading ? (
+                        <IonSkeletonText animated style={{ width: '60px', height: '32px' }} />
+                      ) : (
+                        <h2>{siteStats.totalMembers}+</h2>
+                      )}
                       <p>Members</p>
                     </div>
                   </IonCol>
                   <IonCol size="4" className="stat-col">
                     <div className="stat">
-                      <h2>50+</h2>
+                      {statsLoading ? (
+                        <IonSkeletonText animated style={{ width: '60px', height: '32px' }} />
+                      ) : (
+                        <h2>{siteStats.totalEvents}+</h2>
+                      )}
                       <p>Events</p>
                     </div>
                   </IonCol>
                   <IonCol size="4" className="stat-col">
                     <div className="stat">
-                      <h2>12+</h2>
+                      {statsLoading ? (
+                        <IonSkeletonText animated style={{ width: '60px', height: '32px' }} />
+                      ) : (
+                        <h2>{siteStats.yearsActive}+</h2>
+                      )}
                       <p>Years</p>
                     </div>
                   </IonCol>
