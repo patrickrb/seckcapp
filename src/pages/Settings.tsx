@@ -134,13 +134,39 @@ const Settings: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar color="primary">
-          <IonTitle>Settings</IonTitle>
+          <IonTitle>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <img 
+                src="/images/bob.png" 
+                alt="SecKC Logo" 
+                style={{ 
+                  width: '28px', 
+                  height: '28px', 
+                  borderRadius: '4px' 
+                }}
+              />
+              Settings
+            </div>
+          </IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar color="primary">
-            <IonTitle size="large">Settings</IonTitle>
+            <IonTitle size="large">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <img 
+                  src="/images/bob.png" 
+                  alt="SecKC Logo" 
+                  style={{ 
+                    width: '36px', 
+                    height: '36px', 
+                    borderRadius: '6px' 
+                  }}
+                />
+                Settings
+              </div>
+            </IonTitle>
           </IonToolbar>
         </IonHeader>
 
