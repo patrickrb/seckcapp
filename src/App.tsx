@@ -10,14 +10,14 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { home, calendar, library, people, settings } from 'ionicons/icons';
+import { home, calendar, people, settings } from 'ionicons/icons';
 import { AuthProvider } from './contexts/AuthContext';
+import { initializeTheme, watchSystemTheme } from './utils/theme';
 import './utils/sampleData'; // Import sample data utility
 import './utils/sampleDataMultipleSpeakers'; // Import multiple speakers sample data
 import './utils/testFirebase'; // Import Firebase test utility
 import Home from './pages/Home';
 import Events from './pages/Events';
-import Resources from './pages/Resources';
 import Social from './pages/Social';
 import Settings from './pages/Settings';
 
@@ -45,13 +45,17 @@ import '@ionic/react/css/display.css';
  */
 
 /* import '@ionic/react/css/palettes/dark.always.css'; */
-/* import '@ionic/react/css/palettes/dark.class.css'; */
-import '@ionic/react/css/palettes/dark.system.css';
+import '@ionic/react/css/palettes/dark.class.css';
+/* import '@ionic/react/css/palettes/dark.system.css'; */
 
 /* Theme variables */
 import './theme/variables.css';
 
 setupIonicReact();
+
+// Initialize theme on app startup
+initializeTheme();
+watchSystemTheme();
 
 const App: React.FC = () => (
   <IonApp>
@@ -64,9 +68,6 @@ const App: React.FC = () => (
             </Route>
             <Route exact path="/events">
               <Events />
-            </Route>
-            <Route exact path="/resources">
-              <Resources />
             </Route>
             <Route exact path="/social">
               <Social />
@@ -86,10 +87,6 @@ const App: React.FC = () => (
             <IonTabButton tab="events" href="/events">
               <IonIcon aria-hidden="true" icon={calendar} />
               <IonLabel>Events</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="resources" href="/resources">
-              <IonIcon aria-hidden="true" icon={library} />
-              <IonLabel>Resources</IonLabel>
             </IonTabButton>
             <IonTabButton tab="social" href="/social">
               <IonIcon aria-hidden="true" icon={people} />

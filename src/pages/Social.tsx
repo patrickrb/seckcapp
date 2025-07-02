@@ -77,7 +77,7 @@ const Social: React.FC = () => {
       name: "Twitter",
       description: "Follow us for security news, event updates, and community highlights",
       icon: logoTwitter,
-      url: "https://twitter.com/seckc",
+      url: "https://twitter.com/seck_kc",
       color: "twitter",
       members: 1200,
       isActive: true,

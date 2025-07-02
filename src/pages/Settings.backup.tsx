@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   IonContent,
   IonHeader,
@@ -17,140 +17,109 @@ import {
   IonToggle,
   IonSelect,
   IonSelectOption,
+  IonRange,
+  IonNote,
   IonAlert,
+  IonActionSheet,
   IonChip,
   IonBadge,
-  IonText,
-  IonToast
+  IonItemDivider,
+  IonItemGroup,
+  IonText
 } from '@ionic/react';
 import {
   notifications as notificationsIcon,
   moon,
+  language,
   colorPalette,
   shield,
   person,
   informationCircle,
+  bug,
   mail,
+  trash,
+  download,
   refresh,
   checkmark,
   warning,
   settings,
-  phonePortrait,
-  logOut
+  phonePortrait
 } from 'ionicons/icons';
-import { useAuth } from '../contexts/AuthContext';
-import { getStoredTheme, setStoredTheme, applyTheme, type ThemeMode } from '../utils/theme';
 import './Settings.css';
 
 interface NotificationSettings {
   eventReminders: boolean;
   newEvents: boolean;
+  socialUpdates: boolean;
   securityAlerts: boolean;
+  newsletter: boolean;
 }
 
 interface AppSettings {
-  theme: ThemeMode;
+  theme: 'auto' | 'light' | 'dark';
+  language: string;
+  fontSize: number;
   hapticFeedback: boolean;
   autoRefresh: boolean;
+  cacheSize: number;
 }
 
 const Settings: React.FC = () => {
-  const { user, logout } = useAuth();
-  const [showResetAlert, setShowResetAlert] = useState(false);
-  const [showLogoutAlert, setShowLogoutAlert] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-
   const [notifications, setNotifications] = useState<NotificationSettings>({
     eventReminders: true,
     newEvents: true,
-    securityAlerts: true
+    socialUpdates: false,
+    securityAlerts: true,
+    newsletter: true
   });
 
   const [appSettings, setAppSettings] = useState<AppSettings>({
-    theme: 'dark', // Default to dark
+    theme: 'auto',
+    language: 'en',
+    fontSize: 16,
     hapticFeedback: true,
-    autoRefresh: true
+    autoRefresh: true,
+    cacheSize: 50
   });
 
-  // Load settings from localStorage on mount
-  useEffect(() => {
-    const savedNotifications = localStorage.getItem('seckc-notifications');
-    const savedAppSettings = localStorage.getItem('seckc-app-settings');
-    
-    if (savedNotifications) {
-      setNotifications(JSON.parse(savedNotifications));
-    }
-    if (savedAppSettings) {
-      const settings = JSON.parse(savedAppSettings);
-      setAppSettings(settings);
-    } else {
-      // Load current theme from centralized system
-      const currentTheme = getStoredTheme();
-      setAppSettings(prev => ({ ...prev, theme: currentTheme }));
-    }
-  }, []);
-
-  // Save settings to localStorage when they change
-  useEffect(() => {
-    localStorage.setItem('seckc-notifications', JSON.stringify(notifications));
-  }, [notifications]);
-
-  useEffect(() => {
-    localStorage.setItem('seckc-app-settings', JSON.stringify(appSettings));
-    // Update centralized theme system when theme changes
-    setStoredTheme(appSettings.theme);
-    applyTheme(appSettings.theme);
-  }, [appSettings]);
+  const [showResetAlert, setShowResetAlert] = useState(false);
+  const [showActionSheet, setShowActionSheet] = useState(false);
 
   const updateNotificationSetting = (key: keyof NotificationSettings, value: boolean) => {
     setNotifications(prev => ({ ...prev, [key]: value }));
-    showSuccessToast('Notification settings updated');
   };
 
   const updateAppSetting = (key: keyof AppSettings, value: any) => {
     setAppSettings(prev => ({ ...prev, [key]: value }));
-    showSuccessToast('App settings updated');
   };
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      showSuccessToast('Logged out successfully');
-    } catch (error) {
-      showSuccessToast('Error logging out');
-    }
-    setShowLogoutAlert(false);
+  const handleExportData = () => {
+    // Export user data functionality
+    console.log('Exporting user data...');
+  };
+
+  const handleClearCache = () => {
+    // Clear app cache functionality
+    console.log('Clearing cache...');
   };
 
   const handleResetSettings = () => {
     setNotifications({
       eventReminders: true,
       newEvents: true,
-      securityAlerts: true
+      socialUpdates: false,
+      securityAlerts: true,
+      newsletter: true
     });
     setAppSettings({
-      theme: 'dark', // Default to dark
+      theme: 'auto',
+      language: 'en',
+      fontSize: 16,
       hapticFeedback: true,
-      autoRefresh: true
+      autoRefresh: true,
+      cacheSize: 50
     });
-    localStorage.removeItem('seckc-notifications');
-    localStorage.removeItem('seckc-app-settings');
-    setStoredTheme('dark'); // Reset centralized theme to dark
-    applyTheme('dark');
-    showSuccessToast('Settings reset to defaults');
     setShowResetAlert(false);
-  };
-
-  const showSuccessToast = (message: string) => {
-    setToastMessage(message);
-    setShowToast(true);
-  };
-
-  const openEmail = (subject: string) => {
-    const email = 'support@seckc.org';
-    const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
-    window.open(mailtoLink);
   };
 
   const getThemeIcon = () => {
@@ -203,37 +172,40 @@ const Settings: React.FC = () => {
 
         <div className="settings-container">
           {/* Account Section */}
-          {user && (
-            <IonCard className="settings-card">
-              <IonCardHeader>
-                <IonCardTitle>
-                  <IonIcon icon={person} />
-                  Account
-                </IonCardTitle>
-              </IonCardHeader>
-              <IonCardContent>
-                <IonList>
-                  <IonItem>
-                    <IonLabel>
-                      <h2>Email</h2>
-                      <p>{user.email}</p>
-                    </IonLabel>
-                    <IonBadge color="success" slot="end">
-                      <IonIcon icon={shield} size="small" />
-                      Verified
-                    </IonBadge>
-                  </IonItem>
-                  <IonItem button onClick={() => setShowLogoutAlert(true)}>
-                    <IonIcon icon={logOut} slot="start" color="danger" />
-                    <IonLabel>
-                      <h2>Sign Out</h2>
-                      <p>Sign out of your account</p>
-                    </IonLabel>
-                  </IonItem>
-                </IonList>
-              </IonCardContent>
-            </IonCard>
-          )}
+          <IonCard className="settings-card">
+            <IonCardHeader>
+              <IonCardTitle>
+                <IonIcon icon={person} />
+                Account
+              </IonCardTitle>
+            </IonCardHeader>
+            <IonCardContent>
+              <IonList>
+                <IonItem button>
+                  <IonLabel>
+                    <h2>Profile Information</h2>
+                    <p>Manage your personal details and preferences</p>
+                  </IonLabel>
+                </IonItem>
+                <IonItem button>
+                  <IonLabel>
+                    <h2>Privacy Settings</h2>
+                    <p>Control your data sharing and visibility</p>
+                  </IonLabel>
+                </IonItem>
+                <IonItem button>
+                  <IonLabel>
+                    <h2>Security</h2>
+                    <p>Two-factor authentication and login settings</p>
+                  </IonLabel>
+                  <IonBadge color="success" slot="end">
+                    <IonIcon icon={shield} size="small" />
+                    Secure
+                  </IonBadge>
+                </IonItem>
+              </IonList>
+            </IonCardContent>
+          </IonCard>
 
           {/* Notifications */}
           <IonCard className="settings-card">
@@ -269,6 +241,17 @@ const Settings: React.FC = () => {
                 
                 <IonItem>
                   <IonLabel>
+                    <h2>Social Updates</h2>
+                    <p>Community posts and discussions</p>
+                  </IonLabel>
+                  <IonToggle
+                    checked={notifications.socialUpdates}
+                    onIonChange={(e) => updateNotificationSetting('socialUpdates', e.detail.checked)}
+                  />
+                </IonItem>
+                
+                <IonItem>
+                  <IonLabel>
                     <h2>Security Alerts</h2>
                     <p>Important security news and updates</p>
                   </IonLabel>
@@ -276,6 +259,17 @@ const Settings: React.FC = () => {
                     checked={notifications.securityAlerts}
                     onIonChange={(e) => updateNotificationSetting('securityAlerts', e.detail.checked)}
                     color="warning"
+                  />
+                </IonItem>
+                
+                <IonItem>
+                  <IonLabel>
+                    <h2>Newsletter</h2>
+                    <p>Monthly SECKC newsletter</p>
+                  </IonLabel>
+                  <IonToggle
+                    checked={notifications.newsletter}
+                    onIonChange={(e) => updateNotificationSetting('newsletter', e.detail.checked)}
                   />
                 </IonItem>
               </IonList>
@@ -307,6 +301,37 @@ const Settings: React.FC = () => {
                 </IonItem>
 
                 <IonItem>
+                  <IonIcon icon={language} slot="start" />
+                  <IonLabel>Language</IonLabel>
+                  <IonSelect
+                    value={appSettings.language}
+                    onIonChange={(e) => updateAppSetting('language', e.detail.value)}
+                    interface="popover"
+                  >
+                    <IonSelectOption value="en">English</IonSelectOption>
+                    <IonSelectOption value="es">Español</IonSelectOption>
+                    <IonSelectOption value="fr">Français</IonSelectOption>
+                  </IonSelect>
+                </IonItem>
+
+                <IonItemGroup>
+                  <IonItemDivider>
+                    <IonLabel>Font Size</IonLabel>
+                    <IonNote slot="end">{appSettings.fontSize}px</IonNote>
+                  </IonItemDivider>
+                  <IonItem>
+                    <IonRange
+                      value={appSettings.fontSize}
+                      min={12}
+                      max={24}
+                      step={2}
+                      pin={true}
+                      onIonChange={(e) => updateAppSetting('fontSize', e.detail.value)}
+                    />
+                  </IonItem>
+                </IonItemGroup>
+
+                <IonItem>
                   <IonIcon icon={phonePortrait} slot="start" />
                   <IonLabel>
                     <h2>Haptic Feedback</h2>
@@ -329,6 +354,62 @@ const Settings: React.FC = () => {
                     onIonChange={(e) => updateAppSetting('autoRefresh', e.detail.checked)}
                   />
                 </IonItem>
+
+                <IonItemGroup>
+                  <IonItemDivider>
+                    <IonLabel>Cache Size</IonLabel>
+                    <IonNote slot="end">{appSettings.cacheSize}MB</IonNote>
+                  </IonItemDivider>
+                  <IonItem>
+                    <IonRange
+                      value={appSettings.cacheSize}
+                      min={10}
+                      max={200}
+                      step={10}
+                      pin={true}
+                      onIonChange={(e) => updateAppSetting('cacheSize', e.detail.value)}
+                      color="tertiary"
+                    />
+                  </IonItem>
+                </IonItemGroup>
+              </IonList>
+            </IonCardContent>
+          </IonCard>
+
+          {/* Data & Storage */}
+          <IonCard className="settings-card">
+            <IonCardHeader>
+              <IonCardTitle>
+                <IonIcon icon={download} />
+                Data & Storage
+              </IonCardTitle>
+            </IonCardHeader>
+            <IonCardContent>
+              <IonList>
+                <IonItem button onClick={handleExportData}>
+                  <IonIcon icon={download} slot="start" color="primary" />
+                  <IonLabel>
+                    <h2>Export Data</h2>
+                    <p>Download your personal data</p>
+                  </IonLabel>
+                </IonItem>
+                
+                <IonItem button onClick={handleClearCache}>
+                  <IonIcon icon={trash} slot="start" color="warning" />
+                  <IonLabel>
+                    <h2>Clear Cache</h2>
+                    <p>Free up storage space</p>
+                  </IonLabel>
+                  <IonNote slot="end">~{appSettings.cacheSize}MB</IonNote>
+                </IonItem>
+                
+                <IonItem button onClick={() => setShowActionSheet(true)}>
+                  <IonIcon icon={informationCircle} slot="start" color="medium" />
+                  <IonLabel>
+                    <h2>Storage Usage</h2>
+                    <p>View detailed storage breakdown</p>
+                  </IonLabel>
+                </IonItem>
               </IonList>
             </IonCardContent>
           </IonCard>
@@ -343,7 +424,7 @@ const Settings: React.FC = () => {
             </IonCardHeader>
             <IonCardContent>
               <IonList>
-                <IonItem button onClick={() => openEmail('App Support Request')}>
+                <IonItem button>
                   <IonIcon icon={mail} slot="start" color="primary" />
                   <IonLabel>
                     <h2>Contact Support</h2>
@@ -351,10 +432,10 @@ const Settings: React.FC = () => {
                   </IonLabel>
                 </IonItem>
                 
-                <IonItem button onClick={() => openEmail('Bug Report')}>
-                  <IonIcon icon={informationCircle} slot="start" color="warning" />
+                <IonItem button>
+                  <IonIcon icon={bug} slot="start" color="danger" />
                   <IonLabel>
-                    <h2>Report Issue</h2>
+                    <h2>Report Bug</h2>
                     <p>Help us improve the app</p>
                   </IonLabel>
                 </IonItem>
@@ -379,12 +460,12 @@ const Settings: React.FC = () => {
             <IonCardHeader>
               <IonCardTitle className="danger-title">
                 <IonIcon icon={warning} />
-                Reset Settings
+                Danger Zone
               </IonCardTitle>
             </IonCardHeader>
             <IonCardContent>
               <IonText color="medium">
-                <p>Reset all app settings to their default values.</p>
+                <p>These actions cannot be undone. Please proceed with caution.</p>
               </IonText>
               <IonButton
                 expand="block"
@@ -400,31 +481,12 @@ const Settings: React.FC = () => {
           </IonCard>
         </div>
 
-        {/* Logout Confirmation Alert */}
-        <IonAlert
-          isOpen={showLogoutAlert}
-          onDidDismiss={() => setShowLogoutAlert(false)}
-          header="Sign Out"
-          message="Are you sure you want to sign out of your account?"
-          buttons={[
-            {
-              text: 'Cancel',
-              role: 'cancel'
-            },
-            {
-              text: 'Sign Out',
-              role: 'destructive',
-              handler: handleLogout
-            }
-          ]}
-        />
-
         {/* Reset Confirmation Alert */}
         <IonAlert
           isOpen={showResetAlert}
           onDidDismiss={() => setShowResetAlert(false)}
           header="Reset Settings"
-          message="Are you sure you want to reset all settings to their default values?"
+          message="Are you sure you want to reset all settings to their default values? This action cannot be undone."
           buttons={[
             {
               text: 'Cancel',
@@ -438,14 +500,28 @@ const Settings: React.FC = () => {
           ]}
         />
 
-        {/* Success Toast */}
-        <IonToast
-          isOpen={showToast}
-          onDidDismiss={() => setShowToast(false)}
-          message={toastMessage}
-          duration={2000}
-          position="bottom"
-          color="success"
+        {/* Storage Action Sheet */}
+        <IonActionSheet
+          isOpen={showActionSheet}
+          onDidDismiss={() => setShowActionSheet(false)}
+          header="Storage Usage"
+          subHeader={`Total: ${appSettings.cacheSize + 15}MB`}
+          buttons={[
+            {
+              text: `Cache: ${appSettings.cacheSize}MB`,
+              icon: trash,
+              handler: handleClearCache
+            },
+            {
+              text: 'User Data: 15MB',
+              icon: person,
+              handler: handleExportData
+            },
+            {
+              text: 'Cancel',
+              role: 'cancel'
+            }
+          ]}
         />
       </IonContent>
     </IonPage>

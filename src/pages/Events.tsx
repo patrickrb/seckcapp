@@ -405,10 +405,10 @@ const Events: React.FC = () => {
                           // Use sponsorOrder if available, otherwise fall back to Object.keys
                           const orderedSponsors = event.sponsorOrder && Array.isArray(event.sponsorOrder) && event.sponsorOrder.length > 0 
                             ? event.sponsorOrder 
-                            : Object.keys(event.sponsorLinks);
+                            : Object.keys(event.sponsorLinks || {});
                           
                           return orderedSponsors.map((sponsor, index) => {
-                            const url = event.sponsorLinks[sponsor];
+                            const url = event.sponsorLinks?.[sponsor];
                             if (!url) return null; // Skip if sponsor not found in links
                             
                             return (

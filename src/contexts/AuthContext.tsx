@@ -169,7 +169,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const updatePreferences = async (preferences: Partial<UserPreferences>) => {
     if (!user) throw new Error('No user logged in');
     
-    const updatedPreferences = { ...user.preferences, ...preferences };
+    const currentPreferences = user.preferences || {};
+    const updatedPreferences = { ...currentPreferences, ...preferences } as UserPreferences;
     await updateDoc(doc(db, 'users', user.uid), { preferences: updatedPreferences });
     setUser({ ...user, preferences: updatedPreferences });
   };

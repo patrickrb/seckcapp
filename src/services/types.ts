@@ -20,9 +20,9 @@ export interface User {
 }
 
 export interface UserPreferences {
-  notifications: boolean;
-  darkMode: boolean;
-  language: string;
+  notifications?: boolean;
+  darkMode?: boolean;
+  language?: string;
   notificationsEvents?: boolean;
   notificationsNewEvents?: boolean;
   notificationsSocial?: boolean;
@@ -71,6 +71,7 @@ export interface Event {
   attendeeCount: number;
   userRsvpStatus?: 'attending' | 'maybe' | 'not_attending';
   userAttended?: boolean;
+  isBookmarked?: boolean;
 }
 
 export interface EventCategory {
