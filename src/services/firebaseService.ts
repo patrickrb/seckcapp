@@ -27,6 +27,20 @@ const convertTimestamps = (data: any): any => {
     for (const key in converted) {
       if (converted[key] instanceof Timestamp) {
         converted[key] = converted[key].toDate().toISOString();
+      } else if ((key === 'eventDate' || key === 'endDate' || key === 'createdAt' || key === 'updatedAt' || key === 'registrationDeadline') && converted[key]) {
+        // Convert date strings to ISO format - handle any date format
+        let date = new Date(converted[key]);
+        
+        // If the first attempt fails, try parsing the Firebase format manually
+        if (isNaN(date.getTime()) && typeof converted[key] === 'string') {
+          // Handle "August 12, 2025 at 5:00:00 PM CDT" format
+          const dateStr = converted[key].replace(' at ', ' ');
+          date = new Date(dateStr);
+        }
+        
+        if (!isNaN(date.getTime())) {
+          converted[key] = date.toISOString();
+        }
       } else if (converted[key] && typeof converted[key] === 'object') {
         converted[key] = convertTimestamps(converted[key]);
       }

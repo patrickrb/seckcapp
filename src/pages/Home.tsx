@@ -72,6 +72,8 @@ const Home: React.FC = () => {
       const events = await eventsService.getEvents({
         limit: 10
       });
+
+      console.log('events: ', events);
       
       // Filter to upcoming events and get the next one
       const now = new Date();
@@ -152,7 +154,9 @@ const Home: React.FC = () => {
   };
 
   const formatEventDate = (dateString: string) => {
+    if (!dateString) return 'Date TBD';
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Invalid Date';
     return date.toLocaleDateString('en-US', { 
       year: 'numeric', 
       month: 'long', 
@@ -161,7 +165,10 @@ const Home: React.FC = () => {
   };
 
   const formatEventTime = (dateString: string, endDateString?: string) => {
+    if (!dateString) return 'Time TBD';
     const startDate = new Date(dateString);
+    if (isNaN(startDate.getTime())) return 'Invalid Time';
+    
     const startTime = startDate.toLocaleTimeString('en-US', { 
       hour: 'numeric', 
       minute: '2-digit' 
@@ -169,6 +176,7 @@ const Home: React.FC = () => {
     
     if (endDateString) {
       const endDate = new Date(endDateString);
+      if (isNaN(endDate.getTime())) return startTime;
       const endTime = endDate.toLocaleTimeString('en-US', { 
         hour: 'numeric', 
         minute: '2-digit' 
